@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 const useStyles = createStyles((theme) => ({
     header: {
         display: "flex",
-        justifyContent: "start",
+        justifyContent: "center",
         gap: "2rem",
         alignItems: "center",
         height: "100%",
@@ -92,19 +92,21 @@ export function HeaderSimple({ links }: HeaderSimpleProps) {
     ));
 
     return (
-        <Header height={60}>
-            <Container className={classes.header}>
-                <ArrowUpCircle size={28} />
-                <Group spacing={5} className={classes.links}>
-                    {items}
-                </Group>
-                <Burger
-                    opened={opened}
-                    onClick={toggle}
-                    className={classes.burger}
-                    size='sm'
-                />
-            </Container>
-        </Header>
+        <div style={{width: "98vw"}}>
+            <Header height={60}>
+                <Container className={classes.header}>
+                    <ArrowUpCircle size={28} />
+                    <Group spacing={20} className={classes.links}>
+                        {items}
+                    </Group>
+                    <Burger
+                        opened={opened}
+                        onClick={toggle}
+                        className={classes.burger}
+                        size='sm'
+                    />
+                </Container>
+            </Header>
+        </div>
     );
 }
