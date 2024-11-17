@@ -14,22 +14,17 @@ const HomePage = () => {
 
     const [text, setText] = useState('');
 
-    const submit = () => {
-        fetch('http://localhost:8080/Posts')
-        .then(response => response.json())
-        .then(res => console.log(res))
-    //     e.preventDefault();
-    //     fetch('http://localhost:5173/', {
-    //         method: 'POST',
-    //         body: JSON.stringify({
-    //             text,
-    //             completed: false
-    //         })
-    //     })
-    //     .then(res => res.json())
-    //     .then(() => {
-    //         console.log(e.message)
-    //     })
+    const submit = async() => {
+        await fetch(`http://localhost:8080/Post`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              text: text,
+            }),
+          });
 }
 
     const [isOpenPost, setIsOpenPost] = useState(false);
@@ -59,10 +54,10 @@ const HomePage = () => {
                                 <CloseButton variant="dark" onClick={closePostPopup} style={{left: "95%", top: "10%"}}/>
                             </div>
                             <div>
-                                <form onSubmit={submit}>   
-                                    <input type="text" placeholder="Say Something..." name="text" value= {text} onChange={(e) => {setText(e.target.value)}}/> 
-                                <button type="submit">Post</button>
-                                </form>
+                             
+                                <input type="text" placeholder="Say Something..." name="text" value= {text} onChange={(e) => {setText(e.target.value)}}/> 
+                                <button type="submit" onClick={submit}>Post</button>
+                            
                             </div>
                         </div>
                     )}

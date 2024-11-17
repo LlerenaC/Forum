@@ -1,8 +1,9 @@
 import path from "path";
-import express, { Express } from "express";
+import express, { Express, json } from "express";
 import cors from "cors";
 import { WeatherResponse } from "@full-stack/types";
 import fetch from "node-fetch";
+import { db } from "./firebase";
 
 const app: Express = express();
 
@@ -11,6 +12,18 @@ const port = 8080;
 
 app.use(cors());
 app.use(express.json());
+
+app.post("/Post", async (req, res) => {
+    const {text} = req.body;
+    addPerson(text);
+    res.status(200).send("Working");
+})
+
+const userCollectionRef = db.collection("Posts");
+
+export const addPerson = async (text: string) => {
+    await userCollectionRef.add({text: text});
+  };
 
 type WeatherData = {
     latitude: number;
@@ -41,6 +54,6 @@ app.get("/weather", async (req, res) => {
     }
 });
 
-app.listen(port, hostname, () => {
+app.listen(port, () => {
     console.log("Listening");
 });
