@@ -1,18 +1,33 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./home.css";
 import { CloseButton} from "@mantine/core";
 
 const HomePage = () => {
-    const postsToDisplay = () => {
-        var arr = [
-            'Post1',
-            'Post2',
-            'Post3'
-        ]
-        return arr
-    };
 
+    const [data, setData] = useState<Array<String>>([]);
     const [text, setText] = useState('');
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            fetch('http://localhost:8080/Post/get')
+            .then(res => res.json())
+            .then(data => setData(data.values()))
+            .catch(error => console.error('Error fetching data:', error));
+            console.log();
+            };
+            fetchPosts();
+    }, []);
+    
+
+    // const postsToDisplay = () => {
+    //     var arr = [
+    //         'Post1',
+    //         'Post2',
+    //         'Post3'
+    //     ]
+    //     return arr
+    // };
+
 
     const submit = async() => {
         await fetch(`http://localhost:8080/Post`, {
@@ -24,7 +39,7 @@ const HomePage = () => {
             body: JSON.stringify({
               text: text,
             }),
-          });
+    })
 }
 
     const [isOpenPost, setIsOpenPost] = useState(false);
@@ -85,8 +100,8 @@ const HomePage = () => {
                             <button className="Post-button" onClick={openPostPopup}>Post</button> 
                             <button className="Post-button" onClick={openAskPopup}>Ask a question</button>
                         </div>
-                        {postsToDisplay().map(item => 
-                        <div className="Posts"key={postsToDisplay().indexOf(item)}>
+                        {data.map(item => 
+                        <div className="Posts" key={data.indexOf(item)}>
                             {item}
                         </div>)}
                     </div>
