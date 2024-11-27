@@ -3,7 +3,12 @@ import express, { Express, json } from "express";
 import cors from "cors";
 import { WeatherResponse } from "@full-stack/types";
 import fetch from "node-fetch";
-import { db } from "./firebase";
+import {
+    getPosts,
+    addPost,
+    deletePost,
+    getID,
+} from "./posts.controller";
 
 const app: Express = express();
 
@@ -13,19 +18,11 @@ const port = 8080;
 app.use(cors());
 app.use(express.json());
 
-const userCollectionRef = db.collection("Posts");
-
 app.post("/Post", async (req, res) => {
     const {text} = req.body;
-    addPerson(text);
+    addPost(text);
     res.status(200).send("Working");
-})
-
-export const getPosts = async () => {
-    const snapshot = await userCollectionRef.get();
-    const posts = snapshot.docs.map((doc) => doc.data());
-    return posts;
-  };
+});
 
 app.get("/Post/get", async (req, res) => {
     const posts = await getPosts();
@@ -33,12 +30,21 @@ app.get("/Post/get", async (req, res) => {
         message: `SUCCESS retrieved ${posts} from Posts collection`,
         data: posts,
     });
-})
+});
 
-
-export const addPerson = async (text: string) => {
-    await userCollectionRef.add({text: text});
-  };
+app.delete("/Post/delete/:id", async (req, res) => {
+    const id: string = req.params.id;
+    try {
+        await deletePost(id);
+        res.status(200).send({
+            message: `SUCCESS deleted post with id: ${id} from the Posts collection`,
+        });
+    } catch (err) {
+        res.status(500).send({
+            error: `ERROR: an error occurred in the /Post/delete endpoint: ${err}`,
+        });
+    }
+});
 
 type WeatherData = {
     latitude: number;
