@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import {
     createStyles,
     Header,
@@ -10,6 +10,9 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { ArrowUpCircle } from "lucide-react";
 import { Link } from "react-router-dom";
+import {  signOut, getAuth } from "firebase/auth";
+import {auth} from '../firebase';
+import { useNavigate } from 'react-router-dom';
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -65,7 +68,10 @@ const useStyles = createStyles((theme) => ({
             }).color,
         },
     },
+    
 }));
+
+
 
 interface HeaderSimpleProps {
     links: { link: string; label: string }[];
@@ -75,6 +81,18 @@ export function HeaderSimple({ links }: HeaderSimpleProps) {
     const [opened, { toggle }] = useDisclosure(false);
     const [active, setActive] = useState(links[0].link);
     const { classes, cx } = useStyles();
+
+    const navigate = useNavigate();
+
+const handleLogout = () => {               
+    signOut(auth).then(() => {
+    // Sign-out successful.
+        navigate("/");
+        console.log("Signed out successfully")
+    }).catch((error) => {
+    // An error happened.
+    });
+}
 
     const items = links.map((link) => (
         <Link
@@ -91,8 +109,20 @@ export function HeaderSimple({ links }: HeaderSimpleProps) {
         </Link>
     ));
 
+    const [photoURL, setPhotoURL] = useState<null | string>();
+    const auth = getAuth();
+    const user = auth.currentUser;
+    useEffect(() => {     
+        if (user !== null) {
+            user.providerData.forEach((profile) => {
+            setPhotoURL(profile.photoURL);
+            });
+            
+        }
+    }, []);
+
     return (
-        <div style={{width: "98vw"}}>
+        <div style={{width: "100vw", position:"sticky", zIndex:"100", top: "0px", borderBottom: "solid grey 2px",}}>
             <Header height={60}>
                 <Container className={classes.header}>
                     <ArrowUpCircle size={28} />
@@ -105,6 +135,12 @@ export function HeaderSimple({ links }: HeaderSimpleProps) {
                         className={classes.burger}
                         size='sm'
                     />
+                    <button onClick={handleLogout} style={{position: "absolute", left: "90vw", backgroundColor:"lightslategray", color: "white"}}>
+                        Logout
+                    </button>
+                    {(photoURL != null) &&
+                        <img src={photoURL} style={{borderRadius: "50%", height: "30px", left: "87vw", position: "absolute"}}/>
+                    } 
                 </Container>
             </Header>
         </div>

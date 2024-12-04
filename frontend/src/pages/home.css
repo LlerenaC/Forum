@@ -1,9 +1,10 @@
 
 .sc{
     position: absolute;
-    height: 100%;
+    overflow:hidden;
+    height: 92.2%;
     width: 100%;
-    background-color: whitesmoke;
+    background-image: url("https://images.pexels.com/photos/743986/pexels-photo-743986.jpeg?cs=srgb&dl=pexels-jessbaileydesign-743986.jpg&fm=jpg");
     text-align: center;
 }
 
@@ -12,12 +13,13 @@
     position: absolute;
     top: auto;
     width: 25%;
-    height: 100%;
+    min-height: 100%;
 }
 
 .middle-box{
     z-index: 0;
     position: absolute;
+    overflow: auto;
     left: 25%;
     width: 50%;
     height: 100%;
@@ -40,7 +42,7 @@
     min-height: 10%;
     width: 80%;
     background-color: white;
-    text-align: center;
+    text-align: left;
     text-overflow: clip;
     margin-bottom: 2%;
     border-radius: 5px;
@@ -52,6 +54,9 @@
 }
 
 .make-post{
+    z-index: 2;
+    position: sticky;
+    top: 5px;
     text-align: center;
     margin: auto;
     width: 50%;
@@ -65,6 +70,9 @@
 
 .Post-button{
     position: relative;
+    background-color: lightslategray;
+    color: white;
+    border-radius: 10px;
     margin: 3.5%;
     width: 35%;
     font-size: 70%;
@@ -84,9 +92,8 @@
 }
 
 .Post-popup-header{
-    width: 100%;
-    height: 10%;
     border-bottom: solid gray 2px;
+    height: 30px;
 }
 
 .Post-text{
@@ -101,7 +108,10 @@
 
 .Post-text-box {
     width: 100%;
-    height: 100%;
+    height: 65%;
+    text-overflow: clip;
+    overflow-wrap: break-word;
+    word-break: keep-all;
 }
 
 .CloseButton {
@@ -129,5 +139,8 @@
   }
 
 .Hide-post {
-    box-shadow: none;
+    position: absolute;
+    display: inline;
 }
+
+

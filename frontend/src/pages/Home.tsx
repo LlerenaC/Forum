@@ -1,15 +1,36 @@
 import { useEffect, useState } from "react";
 import "./home.css";
 import { CloseButton} from "@mantine/core";
+import {  signOut } from "firebase/auth";
+import {auth} from '../firebase';
+import { useNavigate } from 'react-router-dom';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 
 const HomePage = () => {
     interface Data {
-        text: {text: String};
+        text: {text: String, photoURL: string, userName: string};
         id: String;
     };
 
+    const [userName, setUserName] = useState<null | string>();
+    const [photoURL, setPhotoURL] = useState<null | string>();
     const [data, setData] = useState<Data[]>([]);
     const [text, setText] = useState('');
+    const auth = getAuth();
+    const user = auth.currentUser;
+    
+    useEffect(() => {     
+        if (user !== null) {
+            user.providerData.forEach((profile) => {
+            console.log("Sign-in provider: " + profile.providerId);
+            console.log(profile.uid);
+            setUserName(profile.displayName);
+            console.log("  Email: " + profile.email);
+            setPhotoURL(profile.photoURL);
+            });
+        }
+    }, [user]);
 
     useEffect(() => {
         const fetchPosts = async () => {
@@ -19,7 +40,8 @@ const HomePage = () => {
             .catch(error => console.error('Error fetching data:', error));
             };
             fetchPosts();
-    }, [data]);
+            console.log(data);
+    }, []);
 
     const submit = async() => {
         await fetch(`http://localhost:8080/Post`, {
@@ -30,8 +52,9 @@ const HomePage = () => {
             },
             body: JSON.stringify({
               text: text,
+              photoURL: photoURL,
+              userName: userName,
             }),
-            
         })
         closePostPopup();
         window.location.reload();
@@ -41,6 +64,7 @@ const HomePage = () => {
         await fetch(`http://localhost:8080/Post/delete/${id}`, {
             method: 'DELETE',
         });
+        window.location.reload();
     }
 
     const [isOpenPost, setIsOpenPost] = useState(false);
@@ -51,79 +75,44 @@ const HomePage = () => {
     const closePostPopup = () => {
         setIsOpenPost(false)
     };
-
-    const [isOpenAsk, setIsOpenAsk] = useState(false);
-    const openAskPopup = () => {
-        setIsOpenAsk(true);
-    };
-
-    const closeAskPopup = () => {
-        setIsOpenAsk(false);
-    };
-
     return(
         <>
-            <head>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossOrigin="anonymous"/>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-            </head>
             <div className="sc">
                     {isOpenPost && (
                         <div className="Post-popup">
-                            <div className="Post-popup-header">
-                                <CloseButton variant="dark" onClick={closePostPopup} style={{left: "95%", top: "10%"}}/>
-                            </div>
-                            <div>
-                             
-                                <input type="text" placeholder="Say Something..." name="text" value= {text} onChange={(e) => {setText(e.target.value)}}/> 
-                                <button type="submit" onClick={submit}>Post</button>
-                            
-                            </div>
-                        </div>
-                    )}
-
-                    {(isOpenPost || isOpenAsk) && (
-                        <div className="overlay" onClick={(isOpenPost) ? closePostPopup:closeAskPopup}>
-
-                        </div>
-                    )}
-                    
-                    {isOpenAsk && (
-                        <div className="Post-popup">
                             <header>
-                                <CloseButton className="CloseButton"variant="dark" onClick={closeAskPopup} style={{left: "96%", top: "13%"}}/>
+                                <CloseButton className="CloseButton"variant="dark" onClick={closePostPopup} style={{left: "95%", top: "10%"}}/>
                             </header><br></br>
-                            <input className="Post-text-box" type="text" placeholder="Ask Something..." name="text" value= {text} onChange={(e) => {setText(e.target.value)}}/> 
-                            <button type="submit" onClick={submit}>Post</button>
+                                <textarea className="Post-text-box" placeholder="Say Something..." name="text" value= {text} onChange={(e) => {setText(e.target.value)}}/>    
+                                <button style={{borderRadius:"10px", background: "lightslategray", color:"white", }}type="submit" onClick={submit}>Post</button> 
                         </div>
                     )}
-                    <div className="left-box">
-                    
-                    </div>
-                    <div className="middle-box">
-                        <div className="make-post">
-                            <button className="Post-button" onClick={openPostPopup}>Post</button> 
-                            <button className="Post-button" onClick={openAskPopup}>Ask a question</button>
+
+                    {(isOpenPost) && (
+                        <div className="overlay" onClick={closePostPopup}>
+
                         </div>
+                    )}
+
+                    {/* <div className="left-box">
+                    
+                    </div> */}
+                    <div className="middle-box">
+                        <header className="make-post">
+                            <button className="Post-button" onClick={openPostPopup}>Post</button> 
+                        </header>
                         {data.map(item => 
                         <div className="Posts" key={data.indexOf(item)}>
-                            <header>
-                                <CloseButton variant="dark" className="Hide-post" onClick={(e) => deletePost(item.id)}></CloseButton>
+                            <header className="Post-popup-header">
+                                {(item.text.photoURL != null) &&
+                                    <img src={item.text.photoURL} className="Hide-post" style={{borderRadius: "50%", height: "20px"}}/>
+                                } 
+                                <p className="Hide-post" style={{left: "5%", bottom: "10%", position: "relative"}}>{item.text.userName}</p>
+                                <CloseButton variant="dark" className="Hide-post" style={{boxShadow: "none", left: "87%"}} onClick={(e) => deletePost(item.id)}></CloseButton>
+
                             </header>
                             {item.text.text}
                         </div>)}
-                    </div>
-                    <div className="right-box">
-                    <div className="dropdown">
-  <button className="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Dropdown button
-  </button>
-  <ul className="dropdown-menu">
-    <li><a className="dropdown-item" href="#">Action</a></li>
-    <li><a className="dropdown-item" href="#">Another action</a></li>
-    <li><a className="dropdown-item" href="#">Something else here</a></li>
-  </ul>
-</div>
                     </div>
             </div>
         </>

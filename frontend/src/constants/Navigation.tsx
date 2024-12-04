@@ -1,6 +1,8 @@
 import Weather from "../pages/Weather";
 import Counter from "../pages/Counter";
 import HomePage from "../pages/Home";
+import Login from "../pages/Login";
+import SignUp from "../pages/SignUp";
 
 /**
  * TODO: Modify this constant to point to the URL of your backend.
@@ -22,7 +24,7 @@ export const PATHS: {
     element?: JSX.Element;
 }[] = [
     {
-        link: "/",
+        link: "/home",
         label: "Home",
         element: <HomePage />,
     },
@@ -36,4 +38,14 @@ export const PATHS: {
         label: "Following",
         element: <Counter />,
     },
+    {
+        link: "/",
+        label: "login",
+        element: <Login />,
+    },
+    {
+        link: "/signUp",
+        label: "",
+        element: <SignUp />
+    }
 ];

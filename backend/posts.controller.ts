@@ -1,4 +1,3 @@
-import { idText } from "typescript";
 import { db } from "./firebase";
 
 const userCollectionRef = db.collection("Posts");
@@ -9,8 +8,8 @@ export const getPosts = async () => {
     return posts;
   };
 
-export const addPost = async (text: string) => {
-    await userCollectionRef.add({text: text});
+export const addPost = async (text: string, photoURL: string, userName: string) => {
+    await userCollectionRef.add({text: text, photoURL: photoURL, userName: userName});
   };
 
 export const deletePost = async (id: string) => {
